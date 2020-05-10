@@ -114,7 +114,14 @@ public class MainActivity extends AppCompatActivity {
                     != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_CALL);
             } else {
-                startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number)));
+                //Check if the value entered is USSD.
+                if (number.startsWith("*") && number.endsWith("#")) {
+                    number = number.substring(0, number.length() - 1);//We remove the last #..
+                    String newUSSD = number + Uri.encode("#");//..and we encode our own #(hash) onto the USSD CODE
+                    startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + newUSSD)));
+                } else {
+                    startActivity(new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + number)));
+                }
             }
         } else {
             Toast.makeText(this, "Please Enter Phone Number", Toast.LENGTH_SHORT).show();
